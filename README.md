@@ -1,0 +1,36 @@
+# Video Editing Kit for Claude
+
+Cut real client footage with Claude in **Premiere Pro, DaVinci Resolve or Final Cut Pro**. Claude logs and transcribes your footage, pulls the best moments and interview lines, plans the edit, builds a rough cut in your app, checks it, and learns your style from the changes you make. Built by Tim at Sunday Strolls Productions over a run of paid client jobs.
+
+**Full setup guide (start here):** see the shared Setup Guide doc Tim sent you. The short version:
+
+## Install
+In Claude Code (inside the Claude desktop app, or the terminal version):
+```
+/plugin marketplace add timknoedler/video-editing-kit
+/plugin install video-editor@sunday-strolls-editing-kit
+```
+Restart Claude, then type:
+```
+/video-editor:editor-setup
+```
+Claude asks which editing app you use, installs what's needed (asking before anything big), connects to your app, and creates your notebook folder, `~/Editing-Notes`.
+
+Turn on updates: `/plugin` > **Marketplaces** > this one > **Enable auto-update**.
+
+## First edit
+> Edit the footage in /Volumes/MyDrive/Smith Gala into three 30-second vertical reels using the video-editor skill. The client is the woman in the red dress; keep her out of frame.
+
+## How each app works
+| App | How Claude builds the cut | Bridge |
+|---|---|---|
+| Premiere Pro | Live in Premiere, plus an XML import for the first assembly | [premiere-pro-mcp](https://github.com/leancoderkavy/premiere-pro-mcp) |
+| DaVinci Resolve | XML import for the first assembly, live changes after | [davinci-resolve-mcp](https://github.com/samuelgursky/davinci-resolve-mcp) |
+| Final Cut Pro | Claude writes an FCPXML file; you import it (File > Import > XML) | none needed; [fcp-mcp](https://pypi.org/project/fcp-mcp/) optional |
+
+The workflow was built and proven in Premiere. Resolve and Final Cut use the same workflow with their own build step and are newer; your notes on what works help everyone.
+
+## Good to know
+- Your preferences and lessons live in `~/Editing-Notes`; kit updates never touch them.
+- Claude never picks music, never exports for publishing, and never sends client media anywhere without asking. It never touches your original footage.
+- When you've finished polishing, say **"I'm done polishing, learn from my changes."** That's where it gets good.

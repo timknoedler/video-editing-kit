@@ -1,0 +1,103 @@
+{
+ "media_root": "/Volumes/MyDrive/Shoot Folder",
+ "fps": 23.976,
+ "width": 2160,
+ "height": 3840,
+ "target_lufs": -19,
+ "max_gain_db": 12,
+ "sequences": {
+  "A_Interview_30s_v1": {
+   "dialogue": [
+    {
+     "clip": "DAY 2/C0021.MP4",
+     "in": 29.44,
+     "out": 38.63
+    },
+    {
+     "clip": "DAY 2/C0021.MP4",
+     "in": 83.15,
+     "out": 85.95
+    },
+    {
+     "clip": "DAY 2/C0021.MP4",
+     "in": 110.56,
+     "out": 116.69
+    },
+    {
+     "clip": "DAY 2/C0021.MP4",
+     "in": 121.33,
+     "out": 125.95
+    },
+    {
+     "clip": "DAY 2/C0021.MP4",
+     "in": 254.8,
+     "out": 261.04,
+     "scale": 115
+    }
+   ],
+   "broll": [
+    {
+     "clip": "DAY 2/C0027.MP4",
+     "in": 16.0,
+     "start": 4.92,
+     "end": 9.19
+    },
+    {
+     "clip": "DAY 2/C0028.MP4",
+     "in": 1.5,
+     "start": 11.97,
+     "end": 14.49
+    },
+    {
+     "clip": "DAY 2/C0023.MP4",
+     "in": 117.5,
+     "start": 14.49,
+     "end": 18.1
+    },
+    {
+     "clip": "DAY 2/C0024.MP4",
+     "in": 76.0,
+     "start": 25.0,
+     "end": 28.99
+    }
+   ],
+   "markers": [
+    {
+     "t": 0,
+     "name": "HOOK",
+     "comment": "Opens on the strongest 2-3 s line. Lower third here."
+    },
+    {
+     "t": 0,
+     "name": "MUSIC START",
+     "comment": "Bed under dialogue; re-time with detect_beats."
+    },
+    {
+     "t": 9.19,
+     "name": "CUTDOWN 15-20s",
+     "comment": "Suggested range for a 15-20 s cutdown"
+    },
+    {
+     "t": 18.12,
+     "name": "TEXT: punch line",
+     "comment": "On-screen text for the key line"
+    },
+    {
+     "t": 22.74,
+     "name": "Punch-in 115%",
+     "comment": "Hides a jump cut between bites"
+    },
+    {
+     "t": 25.0,
+     "name": "REPLACE: placeholder",
+     "comment": "Placeholder shot: no matching b-roll"
+    },
+    {
+     "t": 27.5,
+     "name": "TEXT: end card",
+     "comment": "Logo / call to action"
+    }
+   ]
+  }
+ }
+}

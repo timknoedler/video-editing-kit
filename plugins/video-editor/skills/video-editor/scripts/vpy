@@ -1,0 +1,8 @@
+#!/bin/bash
+# Run a kit script with the kit venv's Python on Mac (bin) or Windows Git Bash (Scripts).
+# Usage: scripts/vpy shot_quality.py scan "<ROOT>" C0011   (bare script names resolve to this folder)
+D="$(cd "$(dirname "$0")" && pwd)"; V="${EDITKIT_VENV:-$HOME/.editing-kit/venv}"
+for P in "$V/bin/python" "$V/Scripts/python.exe"; do [ -x "$P" ] && break; done
+[ -x "$P" ] || { echo "no venv: run scripts/setup_venv.sh" >&2; exit 1; }
+S="$1"; shift; [ -f "$S" ] || S="$D/$S"
+exec "$P" "$S" "$@"

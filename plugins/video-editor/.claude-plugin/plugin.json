@@ -1,0 +1,16 @@
+{
+  "name": "video-editor",
+  "version": "1.0.0",
+  "description": "Cut real client footage with Claude in Premiere Pro, DaVinci Resolve or Final Cut Pro: selects, bites, paper edits, the build, QC, and learning from your own polish pass",
+  "author": {
+    "name": "Tim Knoedler"
+  },
+  "keywords": [
+    "premiere",
+    "davinci resolve",
+    "final cut pro",
+    "video editing",
+    "reels",
+    "wedding film"
+  ]
+}

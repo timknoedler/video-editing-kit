@@ -42,6 +42,8 @@ If `~/Editing-Notes/` doesn't exist, run the `editor-setup` skill first (or crea
 9. Always quote paths (drive names have spaces).
 10. Keep `_edit/HANDOFF.md` current (template in `templates/`) so the job can resume in another session or on another machine.
 11. The editor edits between sessions. Before building a new version, diff the current sequence against your last handoff copy and carry their changes forward; never revert them.
+12. Never delete anything the editor hasn't asked you to delete by name: no files or folders (in `_edit/` or anywhere else), and no project items, bins, sequences, timelines or render/preview files in the editing app. When they do ask, list exactly what will go, back it up first (duplicate the project, or copy the files to `_edit/backup/`), and wait for their OK. The only exception is the temporary files the kit's own scripts create and clean up.
+13. Check free space on the drive before proxies, renders or long transcodes. If the job would leave less than about 50 GB free, say so and ask before starting. Never free up space by removing anything.
 
 ## 2. Environment
 

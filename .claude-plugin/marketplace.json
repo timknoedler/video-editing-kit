@@ -1,6 +1,6 @@
 {
   "name": "sunday-strolls-editing-kit",
-  "description": "Claude video editing workflow for Premiere Pro, DaVinci Resolve and Final Cut Pro, from Sunday Strolls Productions",
+  "description": "The Sunday Cut: Claude video editing workflow for Premiere Pro, DaVinci Resolve and Final Cut Pro, from Sunday Strolls Productions",
   "owner": {
     "name": "Tim Knoedler"
   },
@@ -8,7 +8,7 @@
     {
       "name": "video-editor",
       "source": "./plugins/video-editor",
-      "description": "Cut real client footage with Claude in Premiere Pro, DaVinci Resolve or Final Cut Pro: selects, bites, paper edits, the build, QC, and learning from your own polish pass"
+      "description": "The Sunday Cut. Cut real client footage with Claude in Premiere Pro, DaVinci Resolve or Final Cut Pro: selects, bites, paper edits, the build, QC, and learning from your own polish pass"
     }
   ]
 }

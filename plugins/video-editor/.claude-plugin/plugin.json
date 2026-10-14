@@ -1,8 +1,8 @@
 {
   "name": "video-editor",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "license": "PolyForm-Perimeter-1.0.1",
-  "description": "Cut real client footage with Claude in Premiere Pro, DaVinci Resolve or Final Cut Pro: selects, bites, paper edits, the build, QC, and learning from your own polish pass",
+  "description": "The Sunday Cut. Cut real client footage with Claude in Premiere Pro, DaVinci Resolve or Final Cut Pro: selects, bites, paper edits, the build, QC, and learning from your own polish pass",
   "author": {
     "name": "Tim Knoedler"
   },

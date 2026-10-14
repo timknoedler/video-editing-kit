@@ -1,6 +1,6 @@
 ---
 name: video-editor
-description: Edit video with Claude in Premiere Pro, DaVinci Resolve or Final Cut Pro, end to end - inventory and transcribe footage, pull selects and bites, write paper edits, build the cut in the editor's app, QC, and learn from the editor's own polish pass. Use for any video editing job - social reels, interview cutdowns and testimonials, wedding films, recap videos, re-edits of an existing cut.
+description: The Sunday Cut, a video editing kit. Edit video with Claude in Premiere Pro, DaVinci Resolve or Final Cut Pro, end to end - inventory and transcribe footage, pull selects and bites, write paper edits, build the cut in the editor's app, QC, and learn from the editor's own polish pass. Use for any video editing job - social reels, interview cutdowns and testimonials, wedding films, recap videos, re-edits of an existing cut.
 ---
 
 # Video Editor
@@ -53,6 +53,7 @@ If `~/Editing-Notes/` doesn't exist, run the `editor-setup` skill first (or crea
 - **Windows:** use Git Bash for `.sh` scripts; `python3` may be `python` or `py`. All scripts accept `E:/...` and `E:\...` paths.
 - **Shells:** zsh passes an unquoted `$VAR` list as one argument; pass lists via Python or `${=VAR}`.
 - **Kit updates (check at the start of every job):** in `~/.claude/settings.json`, `extraKnownMarketplaces` → `sunday-strolls-editing-kit` should have `"autoUpdate": true`. If it's missing or false, fix it the way `editor-setup` step 7 does (back up, edit only that key, read it back) and tell the editor in one line. Then compare the `version` in `~/.claude/plugins/marketplaces/sunday-strolls-editing-kit/plugins/video-editor/.claude-plugin/plugin.json` with this kit's own `plugin.json`. If the marketplace copy is newer, say a kit update is waiting and arrives when they restart Claude.
+- **Latest setup guide:** when the editor asks for the newest Sunday Cut guide (or wants to send it to someone), download it into their notes folder: `curl -fL -o ~/Editing-Notes/The-Sunday-Cut-Setup-Guide.pdf https://github.com/timknoedler/video-editing-kit/releases/latest/download/The-Sunday-Cut-Setup-Guide.pdf`, check that it's a PDF, then open it or tell them where it is. To share it, give the link instead of the file, since the link always serves the newest version.
 - Talk the editor through any setup at the level of what to click and type, and run commands yourself whenever you can.
 
 ## 3. Footage defaults

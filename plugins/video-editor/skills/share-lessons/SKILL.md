@@ -1,6 +1,6 @@
 ---
 name: share-lessons
-description: Package the editor's new, general editing lessons from ~/Editing-Notes into a short, scrubbed file they can send to Tim (the kit's author), so the best ones go into the next kit update for everyone. Use when the editor says "share my lessons", "send my lessons to Tim", or agrees to share at the end of a job. Never sends anything itself.
+description: Part of The Sunday Cut. Package the editor's new, general editing lessons from ~/Editing-Notes into a short, scrubbed file they can send to Tim (the kit's author), so the best ones go into the next kit update for everyone. Use when the editor says "share my lessons", "send my lessons to Tim", or agrees to share at the end of a job. Never sends anything itself.
 ---
 
 # Share my lessons

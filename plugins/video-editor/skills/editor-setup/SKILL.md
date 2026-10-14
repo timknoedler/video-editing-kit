@@ -1,6 +1,6 @@
 ---
 name: editor-setup
-description: One-time setup for the video-editor kit on a new computer - asks which editing app they use (Premiere Pro, DaVinci Resolve or Final Cut Pro), installs ffmpeg, whisper.cpp and its model, Python and the kit venv, connects Claude to their editing app, and creates the editor's ~/Editing-Notes notebook. Use when someone first installs the kit, says "set me up", or when the video-editor skill finds something missing.
+description: One-time setup for The Sunday Cut (the video-editor kit) on a new computer - asks which editing app they use (Premiere Pro, DaVinci Resolve or Final Cut Pro), installs ffmpeg, whisper.cpp and its model, Python and the kit venv, connects Claude to their editing app, and creates the editor's ~/Editing-Notes notebook. Use when someone first installs the kit, says "set me up" or "set up the Sunday Cut", or when the video-editor skill finds something missing.
 ---
 
 # Editor setup

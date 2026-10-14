@@ -70,4 +70,4 @@ A **product** can be a good or service, or a combination of them.
 
 **Use** means anything you do with the software requiring one of your licenses.
 
-Required Notice: Copyright 2026 Tim Knoedler, Sunday Strolls Productions (https://github.com/timknoedler/video-editing-kit)
+Required Notice: Copyright 2026 Timothy Knoedler, Sunday Strolls Productions (https://github.com/timknoedler/video-editing-kit)

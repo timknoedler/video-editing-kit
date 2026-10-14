@@ -36,4 +36,4 @@ The workflow was built and proven in Premiere. Resolve and Final Cut use the sam
 - When you've finished polishing, say **"I'm done polishing, learn from my changes."** That's where it gets good.
 
 ## License
-Free to use, including on paid client work, under the [PolyForm Perimeter License 1.0.1](LICENSE.md). The one thing it doesn't allow is offering a competing product built from this kit, such as repackaging or reselling it. Copyright 2026 Tim Knoedler, Sunday Strolls Productions.
+Free to use, including on paid client work, under the [PolyForm Perimeter License 1.0.1](LICENSE.md). The one thing it doesn't allow is offering a competing product built from this kit, such as repackaging or reselling it. Copyright 2026 Timothy Knoedler, Sunday Strolls Productions.

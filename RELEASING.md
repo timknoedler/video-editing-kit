@@ -20,6 +20,7 @@ The private playbook's closeout step counts finished jobs since the last release
 9. Tell Tim in two or three lines what's in the release.
 
 ## CHANGELOG
+- Unreleased (ships with the next version): export preset renamed "(The Sunday Cut)"; README and store listing say "by Tim Knoedler".
 - 1.1.1 (2026-10-14): named The Sunday Cut; the setup guide is published with each GitHub release at one always-latest link, and Claude can fetch it ("get the latest Sunday Cut guide"). No toolkit carry-over.
 - 1.1.0 (2026-10-14): new `share-lessons` skill ("share my lessons" packages scrubbed lessons for Tim) plus an end-of-job offer to share; ground rules 12-13 (never delete anything the editor hasn't named; check free space before heavy jobs); setup now turns on auto-update itself and verifies it (`autoUpdate: true` in settings), and every job re-checks it and flags a waiting update. Feature release, no toolkit carry-over: the 3-job count for the next release still runs from 1.0.0.
 - 1.0.0 (2026-10-13): first release, from toolkit commit b74f3f7. Workflow as of mid-October 2026 (five client jobs). Premiere Pro (proven), DaVinci Resolve and Final Cut Pro (new: shared FCP7 XML / new FCPXML builder, app notes).

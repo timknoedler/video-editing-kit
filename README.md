@@ -1,8 +1,8 @@
 # The Sunday Cut
 
-*A video editing kit for Claude, by Sunday Strolls Productions.*
+*A video editing kit for Claude, by Tim Knoedler.*
 
-Cut real client footage with Claude in **Premiere Pro, DaVinci Resolve or Final Cut Pro**. Claude logs and transcribes your footage, pulls the best moments and interview lines, plans the edit, builds a rough cut in your app, checks it, and learns your style from the changes you make. Built by Tim at Sunday Strolls Productions over a run of paid client jobs.
+Cut real client footage with Claude in **Premiere Pro, DaVinci Resolve or Final Cut Pro**. Claude logs and transcribes your footage, pulls the best moments and interview lines, plans the edit, builds a rough cut in your app, checks it, and learns your style from the changes you make. Built by Tim Knoedler over a run of paid client jobs.
 
 **Full setup guide (start here):** [The Sunday Cut Setup Guide (PDF, always the newest)](https://github.com/timknoedler/video-editing-kit/releases/latest/download/The-Sunday-Cut-Setup-Guide.pdf). Drop it into Claude Code and say "Set this up for me." The short version:
 

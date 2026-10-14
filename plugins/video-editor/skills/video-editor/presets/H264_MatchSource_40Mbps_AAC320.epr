@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <PremiereData Version="3">
-    <PresetName>H264 Match Source 40Mbps AAC320 (Sunday Strolls)</PresetName>
+    <PresetName>H264 Match Source 40Mbps AAC320 (The Sunday Cut)</PresetName>
     <PresetComments>($$$/AME/EncoderHost/Presets/9bb57b43-b3d1-448f-bdb0-4c5e3dcf9750/PresetComments=High bitrate output for HD sources. Frame Size, Frame Rate, Field Order, Pixel Aspect, TV Standard, Profile and Level values are set automatically, based on properties of the source.)</PresetComments>
 	<PresetUserComments></PresetUserComments>
 	<PresetCreatorApp>Adobe Media Encoder (Beta)</PresetCreatorApp>

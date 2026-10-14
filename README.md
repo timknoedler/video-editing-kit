@@ -16,7 +16,7 @@ Restart Claude, then type:
 ```
 Claude asks which editing app you use, installs what's needed (asking before anything big), connects to your app, and creates your notebook folder, `~/Editing-Notes`.
 
-Turn on updates: `/plugin` > **Marketplaces** > this one > **Enable auto-update**.
+Updates: setup turns on auto-update for you and checks it again at the start of every job, so new versions arrive when Claude starts.
 
 ## First edit
 > Edit the footage in /Volumes/MyDrive/Smith Gala into three 30-second vertical reels using the video-editor skill. The client is the woman in the red dress; keep her out of frame.
@@ -34,6 +34,7 @@ The workflow was built and proven in Premiere. Resolve and Final Cut use the sam
 - Your preferences and lessons live in `~/Editing-Notes`; kit updates never touch them.
 - Claude never picks music, never exports for publishing, and never sends client media anywhere without asking. It never touches your original footage.
 - When you've finished polishing, say **"I'm done polishing, learn from my changes."** That's where it gets good.
+- Learned something useful? Say **"share my lessons"**. Claude packages your new lessons, with client details removed, into a file you send to Tim. The best ones go into the next update, so everyone's Claude gets better at editing.
 
 ## License
 Free to use, including on paid client work, under the [PolyForm Perimeter License 1.0.1](LICENSE.md). The one thing it doesn't allow is offering a competing product built from this kit, such as repackaging or reselling it. Copyright 2026 Timothy Knoedler, Sunday Strolls Productions.

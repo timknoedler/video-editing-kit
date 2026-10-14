@@ -52,6 +52,7 @@ If `~/Editing-Notes/` doesn't exist, run the `editor-setup` skill first (or crea
 - **Mac:** first touch of `/Volumes` triggers a permission prompt for the terminal. Don't use `screencapture`; if the editing app seems blocked, ask the editor to look.
 - **Windows:** use Git Bash for `.sh` scripts; `python3` may be `python` or `py`. All scripts accept `E:/...` and `E:\...` paths.
 - **Shells:** zsh passes an unquoted `$VAR` list as one argument; pass lists via Python or `${=VAR}`.
+- **Kit updates (check at the start of every job):** in `~/.claude/settings.json`, `extraKnownMarketplaces` → `sunday-strolls-editing-kit` should have `"autoUpdate": true`. If it's missing or false, fix it the way `editor-setup` step 7 does (back up, edit only that key, read it back) and tell the editor in one line. Then compare the `version` in `~/.claude/plugins/marketplaces/sunday-strolls-editing-kit/plugins/video-editor/.claude-plugin/plugin.json` with this kit's own `plugin.json`. If the marketplace copy is newer, say a kit update is waiting and arrives when they restart Claude.
 - Talk the editor through any setup at the level of what to click and type, and run commands yourself whenever you can.
 
 ## 3. Footage defaults
@@ -113,10 +114,11 @@ At closeout, compare against past jobs and name the bottleneck phase.
 Every job ends with `_edit/REPORT.md`: what got built (names, durations); concepts swapped and why; judgment calls; markers left (music, speed ramps, text, weak shots); footage gaps; suggested 15-20 s cutdown points; blockers; tools and techniques (what worked, what failed and the workaround, what was slow); phase timings.
 
 Then:
-1. New tool behavior or technique → append to `~/Editing-Notes/LESSONS.md` with the date, the app and its version. Tell the editor these are worth sending to the kit's author.
+1. New tool behavior or technique → append to `~/Editing-Notes/LESSONS.md` with the date, the app and its version.
 2. Style rules the editor confirmed → `MY_PREFERENCES.md` or the client's `STYLE.md`. Update `used-shots.md` for clients with recurring work.
 3. A reusable helper script written this job → save it, generalized, to `~/Editing-Notes/scripts/` with a one-line usage comment at the top.
 4. Show the editor a short summary of what changed in their notebook. If they reject a lesson, remove it.
+5. **Offer to share (once, lightly).** If step 1 added general lessons this job and `MY_PREFERENCES.md` doesn't say `Sharing lessons: don't ask`, end with one line, for example: *"You picked up N new lessons on this job. Sharing them helps everyone's Claude get better at editing: Tim reviews them and adds the best to the next kit update. Want me to package them for Tim? (yes / not now / don't ask again)"*. "Yes" runs the `share-lessons` skill. "Not now": drop it until the next job with new lessons. "Don't ask again": add `Sharing lessons: don't ask` under "Every video" in `MY_PREFERENCES.md` and never bring it up again. They can still say "share my lessons" any time.
 
 ## 8. Script index
 

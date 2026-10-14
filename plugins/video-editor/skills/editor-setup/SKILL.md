@@ -37,5 +37,13 @@ Read `<video-editor>/reference/<app>.md` for details. Run the commands yourself;
 Create `~/Editing-Notes/` from `<video-editor>/templates/notebook/` if it doesn't exist (never overwrite an existing one). Write their editing app at the top of `MY_PREFERENCES.md`, then ask three quick questions and write the answers in: where they get music, how they caption, and their loudness targets (offer the kit defaults: -14 LUFS social, -10 LUFS wedding films).
 Two computers? Offer to make `~/Editing-Notes` a private GitHub repo so both machines share it (needs `gh auth login`).
 
-## 7. Smoke test (optional, ~2 min)
-Point `probe_media.py` and `contact_sheets.py` at any folder with a few clips, with `EDIT_DIR` set to a temp folder, and show them one contact sheet. Then tell them how to start a real job: "make a folder with the footage, then tell Claude: edit this using the premiere-editor skill" (or fill in `templates/PROJECT_BRIEF.md`).
+## 7. Auto-update (required; you set it and verify it)
+Claude Code leaves auto-update off for marketplaces that don't come from Anthropic, and the `/plugin` menu toggle isn't reliable, so set it yourself:
+1. Open `~/.claude/settings.json` (Windows: `%USERPROFILE%\.claude\settings.json`). Copy it to `settings.json.bak` first, then edit the JSON without touching any other key. Make sure `extraKnownMarketplaces` has this entry:
+   `"sunday-strolls-editing-kit": {"source": {"source": "github", "repo": "timknoedler/video-editing-kit"}, "autoUpdate": true}`
+2. Read it back, parse it as JSON, and confirm `autoUpdate` is `true`. If the JSON won't parse, restore the backup and try again.
+3. Check for blockers: a `DISABLE_AUTOUPDATER` environment variable (shell profile or the `env` block of `settings.json`), or `"autoUpdates": false` in `~/.claude.json`. If either is set, explain that it also stops kit updates and offer to add `"FORCE_AUTOUPDATE_PLUGINS": "1"` to the `env` block of `settings.json`. That turns plugin updates back on without touching their other choices. Only add it if they say yes.
+4. Tell them in one line: updates now arrive when Claude starts, after Tim releases a new version.
+
+## 8. Smoke test (optional, ~2 min)
+Point `probe_media.py` and `contact_sheets.py` at any folder with a few clips, with `EDIT_DIR` set to a temp folder, and show them one contact sheet. Then tell them how to start a real job: "make a folder with the footage, then tell Claude: edit this using the video-editor skill" (or fill in `templates/PROJECT_BRIEF.md`).

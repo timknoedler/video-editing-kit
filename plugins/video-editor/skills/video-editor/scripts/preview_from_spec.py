@@ -16,22 +16,29 @@ PROXY_ROOTS = [r for r in spec.get("proxy_roots", [])]  # extra folders mirrorin
 
 def src_of(clip):
     """Prefer a ProRes proxy (<dir>/Proxies/<clip>_Proxy.mov, or under a proxy_roots mirror): 4K long-GOP decode is very slow."""
+    if clip.startswith("/"): return clip  # absolute paths (renders in _edit/) pass through
     d, b = os.path.split(clip); n = os.path.splitext(b)[0]
     for c in [f"{ROOT}/{d}/Proxies/{n}_Proxy.mov"] + [f"{p.rstrip('/')}/{d}/{n}_Proxy.mov" for p in PROXY_ROOTS]:
         if os.path.exists(c): return c
     return f"{ROOT}/{clip}"
 
-tmp = tempfile.mkdtemp(); parts = []
+tmp = tempfile.mkdtemp(); parts = []; FR = 24000 / 1001; cur_f = 0  # frame-exact: segments by frame count, gaps as black
 for i, b in enumerate(sorted(s.get("broll", []) + s.get("dialogue", []), key=lambda x: x.get("start", x.get("at", 0)))):
     dur = b["end"] - b["start"] if "end" in b else b["out"] - b["in"]
+    f0 = round(b.get("start", b.get("at", cur_f / FR)) * FR); nf = round((b.get("start", b.get("at", cur_f / FR)) + dur) * FR) - f0
+    if f0 > cur_f:  # gap before this item -> black
+        g = f"{tmp}/{i:03d}_gap.mp4"
+        subprocess.run(["ffmpeg", "-v", "error", "-y", "-f", "lavfi", "-i", f"color=black:s={Wp}x{H}:r=24000/1001", "-frames:v", str(f0 - cur_f),
+                        "-vf", "setsar=1,format=yuv420p", "-c:v", "libx264", "-preset", "veryfast", "-crf", "23", g], check=True); parts.append(g)
+    cur_f = f0 + nf
     xoff = b.get("xoff", 0)
     # scale to cover, then crop centred (+xoff in source pixels, scaled)
     vf = (f"scale={Wp}:{H}:force_original_aspect_ratio=increase,"
           f"crop={Wp}:{H}:(iw-{Wp})/2+{xoff}*iw/3840:(ih-{H})/2,fps=24000/1001,setsar=1,format=yuv420p")
     p = f"{tmp}/{i:03d}.mp4"
     rot = ["-noautorotate"] if b.get("ignore_rotation") else []  # wrong rotation metadata (shot horizontal); its proxy has the bad rotation baked in, so use the original
-    subprocess.run(["ffmpeg", "-v", "error", "-y"] + rot + ["-ss", str(b["in"]), "-i", f"{ROOT}/{b['clip']}" if rot else src_of(b["clip"]), "-t", f"{dur:.3f}",
-                    "-an", "-vf", vf, "-c:v", "libx264", "-preset", "veryfast", "-crf", "23", p], check=True)
+    subprocess.run(["ffmpeg", "-v", "error", "-y"] + rot + ["-ss", str(b["in"]), "-i", (b['clip'] if b['clip'].startswith("/") else f"{ROOT}/{b['clip']}") if rot else src_of(b["clip"]), "-t", f"{dur + 1:.3f}",
+                    "-an", "-vf", vf + ",tpad=stop_mode=clone:stop_duration=1", "-frames:v", str(nf), "-c:v", "libx264", "-preset", "veryfast", "-crf", "23", p], check=True)
     parts.append(p)
 open(f"{tmp}/list.txt", "w").write("".join(f"file '{p}'\n" for p in parts))
 cat = f"{tmp}/cat.mp4"

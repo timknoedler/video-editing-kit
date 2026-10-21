@@ -8,7 +8,7 @@ description: The Sunday Cut, a video editing kit. Edit video with Claude in Prem
 A tested workflow for cutting real client footage with Claude Code in Premiere Pro, DaVinci Resolve or Final Cut Pro. It was developed and proven in Premiere; Resolve and Final Cut use the same workflow with their own build step. It was built over a run of paid jobs (social reels, interview reels, gala and camp promos, a full wedding film) and keeps the lessons from each one.
 
 Files in this skill (`<skill dir>` is the folder this file is in):
-- `recipes/` - one file per video type: `social-short.md`, `interview-cutdown.md`, `wedding-film.md`
+- `recipes/` - one file per video type: `social-short.md`, `interview-cutdown.md`, `wedding-film.md`, `ceremony-film.md`
 - `reference/premiere.md`, `reference/resolve.md`, `reference/final-cut.md` - how to build and revise the cut in each app, what works and the workarounds. **Read the one for the editor's app before Phase 3.** (The Premiere file also holds most of the kit's audio, color and QC techniques; skim it whatever the app.)
 - `scripts/` - helper scripts (section 8). Run Python ones through `scripts/vpy`.
 - `templates/` - project brief, handoff, and the starting files for the editor's notebook.
@@ -35,7 +35,7 @@ If `~/Editing-Notes/` doesn't exist, run the `editor-setup` skill first (or crea
 2. Never overwrite an existing project, timeline or library. Make new versioned ones (`<Project>_ClaudeEdit_v1`, `<Sequence>_v2`...).
 3. Before any timeline change on a sequence that already has work in it, checkpoint or duplicate it first.
 4. Nothing is exported for publishing, uploaded or sent anywhere unless the editor asks. Review frames and low-res review renders are fine.
-5. Don't pick or download music unless the editor provides it. Cut to visual rhythm and leave a marker where a track starts; re-time with `detect_beats` once a track is in.
+5. Never download or license music. When the editor asks, suggest options from their licensing service and let them pick (check which license fits the job: some are wedding-only, others cover commercial and client social work). Music sites that render client-side need a scroll before reading the page; fetch song pages one at a time about 1.5 s apart, as rapid searching gets the browser rate-limited (HTTP 429). Once a track is in, cut on its beat grid (librosa) and make bar-aligned music edits as WAVs in `_edit/music/`; without one, cut to visual rhythm and leave a marker where the track starts.
 6. Before sending any client audio or video to a cloud service (e.g. Adobe Enhance Speech), ask.
 7. When something is ambiguous, make a reasonable call, log it in the report, keep going.
 8. If the editing app isn't connected, do all the headless work anyway and say clearly that the build is waiting.
@@ -62,11 +62,14 @@ Read the actual camera and format from `probe_media.py`; don't assume. Lessons t
 - **Sony sidecars:** `<clip>M01.XML` holds model, `captureFps` and `CreationDate`; `probe_media.py` reads them.
 - **Rotation metadata can be wrong.** Vertical clips usually import correctly (2160x3840), but confirm every rotated clip in review frames; fix with Motion Rotation 270 + Scale 177.78.
 - **Slow motion:** `captureFps` 59.94 in a 23.98 file is already 2.5x slow (S&Q). A 59.94p *file* plays real time - offer it as a slow-mo option. 59.94p drone at 40% (interpreted as 23.976) is clean slow motion.
-- **Proxies:** read proxies for sheets and scans (~10x faster than 4K long-GOP). `make_proxies.py` makes missing ones outside the footage; attach to every master clip a sequence uses (`manage_proxies` attach, then `has_proxy`).
+- **Proxies:** read proxies for sheets and scans (~10x faster than 4K long-GOP). `make_proxies.py` makes missing ones outside the footage; attach to every master clip a sequence uses (`manage_proxies` attach, then `has_proxy`). **Timing (hard rule): proxy encodes and other heavy scans never overlap work in the editing app** (import, build, render, export) or the editor working in it. When they compete the app stalls and the bridge drops (five parallel ProRes encodes on an M1 crashed the Adobe background services). Make proxies in Phase 1 with the app closed or idle, only for the clips the scans need (big libraries: shortlisted clips via `--only`), or after the build is verified for the clips the cut uses. `make_proxies.py` runs at low priority with 2 workers by default.
+- **59.94p left at real speed in a 23.976 timeline judders** (the app drops source frames 3-2-3-2; editors see it as "choppy" drone). `drone_cadence.py` shows it as a period-2 pattern (alternating diffs, e.g. 12/9) even when its verdict says smooth, so read the diff row. Fix: render every 2nd frame at 23.976 (0.8x: `-vf "select='not(mod(n\,2))',setpts=N/(24000/1001)/TB" -r 24000/1001`) or 0.4x with `render_slowmo.py`. Transcode 4K HEVC drone windows to ProRes so timeline playback doesn't stutter.
+- **Vertical drone clips** (DJI rotation 90): `render_slowmo.py` (ffmpeg autorotate) writes upright 2160x3840 ProRes; place them at scale 100 in 9:16 sequences instead of cropping a horizontal shot.
 - **Log footage:** don't grade rough cuts. Correct only if asked (see the editor's preferences).
 - **Audio recorders:** pair with camera clips by timestamp overlap. Camera-only interviews often record quiet (-25 to -31 LUFS).
 - **Multi-day/location shoots:** sort clips by creation date first.
 - **Don't infer events from clip order.** Sync recorder and camera clocks on a shared moment (a toast, a pronouncement) and check timestamps before naming a moment ("first look") to the editor.
+- **Multi-camera / recorder sync by audio:** camera clocks can be off by tens of minutes (one camera was even in another time zone). Extract 16 kHz mono from every camera and recorder and run `audio_sync.py` against the longest-rolling camera; it prints each file's start on that camera's clock. Spot-check a lav against the nearest camera at several points for drift (a few ms is fine).
 
 ## 4. Standard workflow
 
@@ -79,12 +82,14 @@ Log start and end time of every phase (section 6).
 **Phase 2: Selects + paper edits.**
 - **Dialogue:** read the *whole* transcript. Shortlist every strong line, `bites.py score` them (LUFS, noise floor, SNR, fillers). Find a 2-3 s hook and a punchy closer. Snap edges with `bites.py snap`, check against `bites.py words`. An out-point needs a real pause after the last word; if the next word follows with no gap, extend the bite. Confirm final edges by re-transcribing the trimmed audio - whisper word times can be 0.3-0.5 s off. Aim for ~0.6 s from one bite's last word to the next bite's first.
 - **Story, pacing, music:** follow the recipe.
-- **Never in frame:** the client who hired the editor, crew, crew hands - check the whole window, not just the midpoint.
+- **Never in frame:** the client who hired the editor, crew, crew hands - check the whole window, not just the midpoint. Check it for passers-by in the foreground too (a guest crossed the lens for 1.4 s right in one chosen window).
+- **Dialogue- or reaction-driven cuts (bloopers, BTS):** find the moments in the audio, not the frames. Transcribe every clip and add per-clip loudness peaks (ebur128 momentary), then re-transcribe a short window around each candidate for real word times (clip-level whisper timestamps drift by seconds when speech is sparse, and can loop-hallucinate). Transcribe the review render too: it catches clipped line endings.
 - **No repeated shots** within a video unless asked; across a set of reels, compare source *windows*, not just clip names (the same moment in 4 of 5 reels is what viewers notice). Count faces too: the same kid in consecutive shots reads as a repeat.
-- **B-roll: cut on action.** Name the action each shot exists to show (step out of the car, pour, clink) and make the window contain all of it; cut into the next shot mid-motion. A steady window where nothing happens is the wrong pick. Use `action_scan.py` (subject motion with camera motion removed) joined with a shake scan; `bg_shake.py` is the tie-breaker for shake (bar: jitter <= 0.8%, peak <= 2%; drone <= ~0.3 px).
+- **B-roll: cut on action.** Name the action each shot exists to show (step out of the car, pour, clink) and make the window contain all of it; cut into the next shot mid-motion. A steady window where nothing happens is the wrong pick. Use `action_scan.py` (subject motion with camera motion removed) joined with a shake scan; `bg_shake.py` is the tie-breaker for shake (bar: jitter <= 0.8%, peak <= 2%; drone <= ~0.3 px); `bg_shake_slide.py` finds the steadiest window of a given length that still has the action.
+- **9:16 crops of 16:9 shots:** the crop shows only 31.6% of the frame width, so shake looks about 3x worse than `bg_shake` reports (a 0.76% window that "passed" looked shaky on the vertical): use a bar of about 0.3-0.4% for cropped shots. Before building, grid candidate frames with the crop box drawn (centre ± 0.158 of the width) and check the action is inside it (the pour, the landing, whole sign letters); shift with `xoff` = (crop centre - 0.5) x 3840. Text wider than ~56% of the frame can't fit a 9:16 crop; a subject that crosses the frame needs a compromise centre checked at both ends of the shot.
 - Write `_edit/selects.md` and `_edit/paper_edits.md`. If a concept isn't viable, say so and build the strongest alternate.
 
-**Phase 3: Build.** Write the cuts as a JSON spec (`scripts/example_spec.json`); the same spec builds for every app. Premiere and Resolve: `xml_from_spec.py` → FCP7 XML. Final Cut: `fcpxml_from_spec.py` → FCPXML 1.10. Both give frame-exact in/outs, b-roll above the dialogue, per-bite gain to -19 LUFS, punch-ins and markers. Then follow `reference/<app>.md` to import, revise and read back. The rest of this phase is written for Premiere; the app files say what changes. Premiere: new project, bins by location plus Audio/Sequences/Graphics, `import_media` the .xml. Read back every sequence (`get_timeline_summary`, `audit_timeline_health`), export review frames, save. No auto-generated SRTs - most editors caption natively in Premiere after picture lock. Name sequences `<Letter>_<Concept>_<length>_v1`; revisions are new `_v2` sequences.
+**Phase 3: Build.** Write the cuts as a JSON spec (`scripts/example_spec.json`); the same spec builds for every app. Premiere and Resolve: `xml_from_spec.py` → FCP7 XML. Final Cut: `fcpxml_from_spec.py` → FCPXML 1.10. Both give frame-exact in/outs, b-roll above the dialogue, per-bite gain to -19 LUFS, punch-ins and markers. Then follow `reference/<app>.md` to import, revise and read back. The rest of this phase is written for Premiere; the app files say what changes. Premiere: new project, bins by location plus Audio/Sequences/Graphics, `import_media` the .xml. Read back every sequence (`get_timeline_summary`, `audit_timeline_health`), export review frames, save. **On the first review render of every XML-built video, check the audio is stereo and in range** (side channel `pan=mono|c0=c0-c1,volumedetect` well above -90 dB, plus ebur128): Premiere renders XML-built music as mono, and a music master at 0 dB lands far too hot (see `reference/premiere.md`). Captions only when the editor asks; then build an audio-anchored burned-in layer (`recipes/social-short.md`), never a raw whisper SRT. Name sequences `<Letter>_<Concept>_<length>_v1`; revisions are new `_v2` sequences.
 **Keep the project findable every round:** a `01 LATEST` bin holds only the current version of each video (distinct label colour); older ones go to `02 Previous versions/<video>`; subclips go in a `Subclips` bin.
 
 **Handoff snapshot (end of Phase 3, required):** save each finished sequence as XML to `_edit/snapshots/<seq>_handoff.xml` (Premiere: `export_as_fcp_xml`; Resolve: export the timeline; Final Cut: the file you built), and in Premiere/Resolve keep a `[handoff] <seq>` duplicate in a `_handoff copies (do not edit)` bin. The editor edits the original.
@@ -129,14 +134,27 @@ Then:
 | `probe_media.py` | ffprobe + Sony XML sidecars → `_edit/work/probe.json` (camera, orientation, capture fps, date) |
 | `contact_sheets.py` | 12-frame sheet per clip + 4-clip review stacks with red dividers |
 | `transcribe_all.sh` | whisper.cpp word-level JSON/SRT/TXT per clip, skips done ones (`ONLY="C1 C2"` to prioritize) |
-| `make_proxies.py` | ProRes Proxy 1080p for clips without proxies, written outside the footage |
+| `make_proxies.py` | ProRes Proxy 1080p for clips without proxies, written outside the footage; low priority, 2 workers, `--only` for a clip list. Never alongside work in the editing app |
 | `shot_quality.py` | `scan` per-second shake/sharpness, `pick` best steady window, `grid` annotated frame grid |
 | `action_scan.py` | Subject motion + camera jitter per 0.25 s; best steady action windows (cut on action) |
 | `bg_shake.py` | Background-only shake (border-ring tracking); the shake tie-breaker. Measure proxies, not graded renders |
 | `bites.py` | `words` timestamped transcript, `snap` cuts to quiet frames, `score` bites |
-| `xml_from_spec.py` | JSON edit spec → FCP7 XML sequences for Premiere and Resolve (frame-exact incl. mixed rates, auto gain, punch-ins, 9:16 reframe, markers) |
-| `fcpxml_from_spec.py` | The same spec → FCPXML 1.10 for Final Cut (validated against Apple's DTD) |
-| `preview_from_spec.py` | Low-res review MP4 of a spec sequence via ffmpeg, no editing app needed |
+| `audio_sync.py` | Audio-sync cameras and recorders to a reference (speech-band envelope cross-correlation, refined on raw audio); prints each file's start on the reference clock |
+| `cam_scan.py` / `cam_flags.py` | 6 fps camera motion + sharpness per clip or proxy, then flagged seconds (whips, focus pulls, blockages) on a shared clock, for multicam angle plans |
+| `proxy_scan.py` | Per-frame action, jitter, pan and sharpness (12 fps) + an 8-frame labelled strip per clip from proxies in any folder; feeds tagging agents |
+| `bg_shake_slide.py` | Sliding-window `bg_shake`: the steadiest windows of a given length that still have action (same bar) |
+| `reel_repeats.py` | Cross-reel repeat check: frame-matches every planned shot's whole source clip (9:16 crop candidates) against delivered exports and reports where it already aired and whether it's the same window. Expect about one false positive per two real hits at 0.85-0.9; confirm with side-by-side frames before swapping |
+| `speech_regions.py` | Per-shot speech onsets and offsets from the final mix, for caption timing |
+| `caption_layer.py` | Cues JSON → bold burned-in caption PNGs → one frame-exact ProRes 4444 alpha layer (lead, wrap, 2-line check) |
+| `music_profile.py` | Length, BPM, onset density, build and brightness of music files, to describe a client's music taste |
+| `xml_from_spec.py` | JSON edit spec → FCP7 XML sequences for Premiere and Resolve (frame-exact incl. mixed rates and any NTSC rate, auto gain, punch-ins, 9:16 reframe with `xoff` crop offsets, stacked layers via `track`, a music track, absolute-path renders, markers) |
+| `fcpxml_from_spec.py` | The same spec → FCPXML 1.10 for Final Cut (validated against Apple's DTD; doesn't read the newer `music`, `track` and `xoff` fields yet) |
+| `preview_from_spec.py` | Low-res review MP4 of a spec sequence via ffmpeg, no editing app needed; frame-exact (segments by frame count, gaps as black), accepts absolute paths; mux the music or mix yourself |
+| `render_slowmo.py` | Frame-exact slow-motion ProRes from a high-fps window (59.94 → 40% at 23.976), keeps orientation (upright vertical drone) |
+| `speed_ramp.py` | Baked speed ramp (fast → eased → slow, motion blur) from high-fps source → ProRes, for apps whose speed tools can't be scripted |
+| `pan_crop.py` | Baked moving 9:16 crop (pans, subject tracking) over a 16:9 source → ProRes |
+| `stabilize.py` | OpenCV path smoothing for genuinely handheld pushes (not gimbal drones) → ProRes |
+| `drone_cadence.py` | Judder/stutter check of a rendered range (duplicate frames, every-Nth-frame spikes) |
 | `vcrop_strip.py` | Frame strip of a window as a 9:16 crop, to check vertical reframes before picking |
 | `style_profile.py` | Shot-length / hook / tail benchmarks from finished reels, for a client `STYLE.md` |
 | `tone_stats.py` | Black/mid/white points, contrast, saturation of finished films, to compare a cut against past exports |

@@ -11,7 +11,7 @@ E = os.environ.get("EDIT_DIR") or f"{root}/_edit"  # EDIT_DIR overrides the outp
 out = sys.argv[2] if len(sys.argv) > 2 else f"{E}/work/probe.json"
 exts = (".mp4", ".mov", ".mxf", ".braw")
 files = sorted(f for f in (g.replace("\\", "/") for g in glob.glob(f"{root}/**/*", recursive=True))  # Windows glob returns backslashes
-               if f.lower().endswith(exts) and "/_edit/" not in f and "/Proxies/" not in f and not os.path.basename(f).startswith("._"))
+               if f.lower().endswith(exts) and "/_edit/" not in f and not re.search(r"/[^/]*Proxies/", f) and not os.path.basename(f).startswith("._"))
 rows = []
 for f in files:
     j = json.loads(subprocess.run(["ffprobe", "-v", "quiet", "-print_format", "json", "-show_streams", "-show_format", f],

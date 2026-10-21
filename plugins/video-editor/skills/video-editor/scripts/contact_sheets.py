@@ -3,8 +3,8 @@
 Usage: contact_sheets.py "<FOOTAGE_ROOT>" [--jobs 6] [--stack 4]
 Reads <ROOT>/_edit/work/probe.json (from probe_media.py). Writes <ROOT>/_edit/contact_sheets/<clip>.jpg and
 <ROOT>/_edit/work/stacks/<first>-<last>.jpg. Frame i of a sheet is at duration*(i+0.5)/12. Skips existing sheets.
-Reads <dir>/Proxies/<clip>_Proxy.mov instead of the original when it exists (much faster on long-GOP 4K)."""
-import json, os, subprocess, sys, tempfile, shutil
+Reads <dir>/Proxies/<clip>_Proxy.mov (or <dir>/<X> Proxies/) instead of the original when it exists (much faster on long-GOP 4K)."""
+import json, os, subprocess, sys, tempfile, shutil, glob
 from concurrent.futures import ThreadPoolExecutor
 
 root = sys.argv[1].rstrip("/"); args = sys.argv[2:]
@@ -15,11 +15,19 @@ probe = json.load(open(f"{E}/work/probe.json"))
 cs = f"{E}/contact_sheets"; st = f"{E}/work/stacks"
 os.makedirs(cs, exist_ok=True); os.makedirs(st, exist_ok=True)
 
+_stems = [os.path.splitext(os.path.basename(r["file"]))[0] for r in probe]
+def sheet_name(r):  # clip stem; folder-prefixed ("2024-07-16_CamA__C0012") only when stems collide across folders
+    stem = os.path.splitext(os.path.basename(r["file"]))[0]
+    return stem if _stems.count(stem) == 1 else os.path.splitext(r["file"])[0].replace("/", "__")
+
 def sheet(r):
-    name = os.path.splitext(os.path.basename(r["file"]))[0]; out = f"{cs}/{name}.jpg"
+    name = sheet_name(r); out = f"{cs}/{name}.jpg"
     if os.path.exists(out): return out
     tmp = tempfile.mkdtemp()
-    d, b = os.path.split(r["file"]); px = f"{root}/{d}/Proxies/{os.path.splitext(b)[0]}_Proxy.mov"
+    d, b = os.path.split(r["file"]); stem = os.path.splitext(b)[0]
+    # proxy in <dir>/Proxies/ or any sibling "* Proxies" folder (e.g. "FX3 Proxies", "Drone Proxies")
+    pdirs = [f"{root}/{d}/Proxies"] + sorted(glob.glob(f"{glob.escape(root + '/' + d)}/*Proxies"))
+    px = next((f"{p}/{stem}_Proxy.mov" for p in pdirs if os.path.exists(f"{p}/{stem}_Proxy.mov")), "")
     src = px if os.path.exists(px) else f"{root}/{r['file']}"
     for i in range(12):
         t = r["duration"] * (i + 0.5) / 12

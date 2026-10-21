@@ -34,7 +34,7 @@ The workflow was built and proven in Premiere. Resolve and Final Cut use the sam
 
 ## Good to know
 - Your preferences and lessons live in `~/Editing-Notes`; kit updates never touch them.
-- Claude never picks music, never exports for publishing, and never sends client media anywhere without asking. It never touches your original footage.
+- Claude never downloads or licenses music (it suggests tracks when you ask), never exports for publishing, and never sends client media anywhere without asking. It never touches your original footage.
 - When you've finished polishing, say **"I'm done polishing, learn from my changes."** That's where it gets good.
 - Learned something useful? Say **"share my lessons"**. Claude packages your new lessons, with client details removed, into a file you send to Tim. The best ones go into the next update, so everyone's Claude gets better at editing.
 

@@ -1,15 +1,19 @@
 #!/usr/bin/env python3
 """Create ProRes Proxy 1080p proxies (matching the <clip>_Proxy.mov convention) for clips that lack one.
-Usage: make_proxies.py "<FOOTAGE_ROOT>" "<PROXY_OUT_ROOT>" [--jobs 3] [--dry]
-Reads <EDIT_DIR or FOOTAGE_ROOT/_edit>/work/probe.json. A clip counts as covered if <dir>/Proxies/<clip>_Proxy.mov exists
+Usage: make_proxies.py "<FOOTAGE_ROOT>" "<PROXY_OUT_ROOT>" [--jobs 2] [--only C0001,C0002] [--dry]
+Runs at low priority with 2 workers by default; never run it while the editing app is importing, building, rendering or exporting.
+--only limits it to the named clips (shortlist or the clips a cut uses). Reads <EDIT_DIR or FOOTAGE_ROOT/_edit>/work/probe.json. A clip counts as covered if <dir>/Proxies/<clip>_Proxy.mov exists
 next to it; otherwise a proxy is written to <PROXY_OUT_ROOT>/<dir>/<clip>_Proxy.mov (source folders stay untouched).
 Keeps frame rate, orientation (frame 1920x1080 or 1080x1920) and audio; verifies duration within 0.1 s."""
 import json, os, subprocess, sys
 from concurrent.futures import ThreadPoolExecutor
 
 args = sys.argv[1:]
-jobs = int(args[args.index("--jobs") + 1]) if "--jobs" in args else 3
+jobs = int(args[args.index("--jobs") + 1]) if "--jobs" in args else 2
+only = set(args[args.index("--only") + 1].split(",")) if "--only" in args else None
 dry = "--dry" in args
+if hasattr(os, "nice"):  # Mac/Linux; ffmpeg children inherit the lower priority
+    os.nice(10)
 root, out = args[0].rstrip("/"), args[1].rstrip("/")
 E = os.environ.get("EDIT_DIR") or f"{root}/_edit"
 probe = json.load(open(f"{E}/work/probe.json"))
@@ -17,11 +21,14 @@ probe = json.load(open(f"{E}/work/probe.json"))
 def dur(f):  # video stream duration (DJI containers carry longer data/subtitle tracks)
     r = subprocess.run(["ffprobe", "-v", "quiet", "-select_streams", "v:0", "-show_entries", "stream=duration", "-of", "csv=p=0", f],
                        capture_output=True, text=True).stdout.strip()
-    return float(r or 0)
+    v = [x for x in r.replace(',', '\n').split() if x.replace('.', '', 1).isdigit()]  # some DJI files print 'NN.N,' or several lines
+    return float(v[0]) if v else 0.0
 
 todo = []
 for r in probe:
     d, b = os.path.split(r["file"]); n = os.path.splitext(b)[0]
+    if only is not None and n not in only:
+        continue
     if os.path.exists(f"{root}/{d}/Proxies/{n}_Proxy.mov"):
         continue
     todo.append((r, f"{root}/{r['file']}", f"{out}/{d}/{n}_Proxy.mov"))

@@ -4,7 +4,7 @@ Read this before Phase 2 on a full-ceremony film: the whole ceremony from start 
 
 ## Shape
 - Processional → ceremony → recessional, in real time. Don't cut anything anyone says; trim only dead air before the processional and after the recessional music.
-- **Opening:** 30-60 s of portraits, establishing shots and guests arriving under the ceremony's own live music, then real time from guests settling in to the first entrance. Opening straight on the processional also works; ask.
+- **Opening:** portraits of the couple first, then the venue, guests arriving and details, then the processional (it flows more smoothly than mixing them), 30-60 s under the ceremony's own live music. End the intro on a shot of the musician synced to the music, then cut to real time. Opening straight on the processional also works; ask.
 - End: linger, fade to black, then the studio's end card (the same one as their highlight films).
 
 ## Cutting
@@ -12,6 +12,7 @@ Read this before Phase 2 on a full-ceremony film: the whole ceremony from start 
 - Show whoever is speaking; cut to strong reactions and to the wide for structure (a reading starting, rings, the kiss). Don't cut during the kiss.
 - Cover every move, whip pan or focus hunt on the handheld camera with a locked-off angle.
 - No music under the ceremony, no slow motion, speed ramps or effects.
+- **Before showing any cut, run a shake and crew pass** (an editor's first notes on a v1 were "a lot of shaky shots" and "cut around photographers if possible"): run `bg_shake.py` on every 2 s slice of the timeline (on proxies) and cover anything over ~0.8% with another angle (use 1 s slices to find the exact steady points; keep handheld walk-alongs only when no other angle shows the moment). Then make a contact sheet of the whole cut every 3 s and cut around every photographer, videographer, tripod camera, crossing guest or raised phone; a 120% crop can remove crew gear at a frame edge.
 - **Crew in frame is normal at ceremonies** (a second shooter on a tripod, photographers): choose the angle without them where one exists and list the rest in the report.
 
 ## Benchmarks

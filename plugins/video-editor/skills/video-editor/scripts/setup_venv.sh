@@ -8,5 +8,5 @@ PY=""; for c in python3 python py; do p=$(command -v $c) && "$p" -c "" 2>/dev/nu
 [ -n "$PY" ] || { echo "install Python 3 first" >&2; exit 1; }
 [ -x "$V/bin/python" ] || [ -x "$V/Scripts/python.exe" ] || "$PY" -m venv "$V"
 VP="$V/bin/python"; [ -x "$VP" ] || VP="$V/Scripts/python.exe"
-"$VP" -m pip -q install --upgrade pip numpy opencv-python-headless librosa pillow scipy openpyxl
+"$VP" -m pip -q install --upgrade pip numpy opencv-python-headless librosa pillow scipy soundfile openpyxl
 "$VP" -c "import cv2, numpy; print('venv ready:', cv2.__version__, numpy.__version__)"

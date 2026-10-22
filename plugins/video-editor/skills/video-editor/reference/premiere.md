@@ -122,4 +122,13 @@ Tested on Premiere Pro 26.5.2 with the CEP backend of the MCP bridge. Behavior c
   - With the conversion LUT only (no creative layer): Shadows +25 / Highlights +20 lifted forest shade p50 61-68 to 88-95; Shadows +80 / Highlights +50 lifted a dusk campfire from 20 to 74; Shadows +40 / Highlights +15 took a night party from 33 to 58 (left moody).
   - Drones placed above the conversion layer respond less: Shadows +40-70 / Highlights +35-45 for p50 56-69 → 71-102; flat older drone footage got Shadows −30 + Saturation 120 (milky p2 48-50 → 38).
 
+**From a stacked-multicam ceremony film (Premiere 26.5, CEP, Oct 2026):**
+- **XML `<enabled>FALSE</enabled>` on clipitems is ignored on import:** every clip comes in enabled. Disable them after import with `enable_disable_clip` per track item. `get_full_sequence_info` still reports `enabled: true` afterwards, so verify by rendered frames (`export_frame` or a review render).
+- **QE `add_track` adds video tracks at the BOTTOM** and fails while the editor has another sequence focused. If a layer must sit on top (an adjustment layer over the angles), give the top track something in the XML (e.g. the end card on V4) and `overwrite_clip` the adjustment layer onto it.
+- **XML audio tracks import mono** (stems from `audio_tracks` too, not only the music pair): build one track per stem in the XML, then `overwrite_clip` a fresh stereo import of each WAV onto its track. Check the side channel on the first render.
+- **Copying Lumetri between clips:** `copy_effect_values` skips Temperature, Tint, Contrast and Saturation (those names exist twice inside Lumetri). Run `copy_effect_values`, then `paste_clip_attributes` (components `['Lumetri Color']`): together they set every slider with short replies (paste alone on a fresh clip works but returns ~30 kB per call).
+- **`set_effect_property` rejects whole numbers written as floats** (5.0, -1.0 → "Illegal Parameter type"): send 5, -1. Fractions (0.3) are fine.
+- **`export_frame` needs its output folder to exist** (it fails rather than creating it): `mkdir -p` first.
+- **Calibrate a slider once before solving for values:** set Temperature/Tint (or Shadows, Contrast...) by a known step on one clip, `export_frame` before and after, and measure the change on 0-255 through the LUT layer; then compute per-clip values instead of guessing.
+
 **Slow:** serial visual tagging (~25 min / 150 clips; parallel agents fix it); 4K shake scan and contact sheets (use proxies); `preview_from_spec.py` now reads proxies (~8 s per reel; 4K originals took 30+ min and the old VO mix hung); saving structure snapshots (one call + one file write per sequence).

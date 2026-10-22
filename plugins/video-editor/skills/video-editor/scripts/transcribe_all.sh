@@ -13,7 +13,7 @@ E="${EDIT_DIR:-$ROOT/_edit}"; T="$E/transcripts"; W="$E/work"; mkdir -p "$T" "$W
   n=$(basename "$f"); n="${n%.*}"
   [ -n "$ONLY" ] && [[ " $ONLY " != *" $n "* ]] && continue
   [ -f "$T/$n.json" ] && continue
-  ffmpeg -v quiet -y -i "$ROOT/$f" -vn -ac 1 -ar 16000 "$W/$n.wav" </dev/null
+  ffmpeg -v quiet -y -i "$ROOT/$f" -vn -ac 1 -ar 16000 "$W/$n.wav" </dev/null || { echo "$n: no audio, skipped"; continue; }  # silent DJI clips would stop the run under set -e
   whisper-cli -m "$M" -f "$W/$n.wav" -l en -ojf -otxt -osrt -ml 1 -sow -of "$T/$n" >/dev/null 2>&1 </dev/null
   rm -f "$W/$n.wav"; echo "$n"
 done

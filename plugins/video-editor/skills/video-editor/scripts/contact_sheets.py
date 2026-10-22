@@ -3,7 +3,7 @@
 Usage: contact_sheets.py "<FOOTAGE_ROOT>" [--jobs 6] [--stack 4]
 Reads <ROOT>/_edit/work/probe.json (from probe_media.py). Writes <ROOT>/_edit/contact_sheets/<clip>.jpg and
 <ROOT>/_edit/work/stacks/<first>-<last>.jpg. Frame i of a sheet is at duration*(i+0.5)/12. Skips existing sheets.
-Reads <dir>/Proxies/<clip>_Proxy.mov (or <dir>/<X> Proxies/) instead of the original when it exists (much faster on long-GOP 4K)."""
+Reads <dir>/Proxies/<clip>_Proxy.mov (or <dir>/<X> Proxies/, or <EDIT_DIR>/proxies/<dir>/ from make_proxies.py) instead of the original when it exists (much faster on long-GOP 4K)."""
 import json, os, subprocess, sys, tempfile, shutil, glob
 from concurrent.futures import ThreadPoolExecutor
 
@@ -27,6 +27,7 @@ def sheet(r):
     d, b = os.path.split(r["file"]); stem = os.path.splitext(b)[0]
     # proxy in <dir>/Proxies/ or any sibling "* Proxies" folder (e.g. "FX3 Proxies", "Drone Proxies")
     pdirs = [f"{root}/{d}/Proxies"] + sorted(glob.glob(f"{glob.escape(root + '/' + d)}/*Proxies"))
+    pdirs.append(f"{E}/proxies/{d}")  # where make_proxies.py writes missing proxies
     px = next((f"{p}/{stem}_Proxy.mov" for p in pdirs if os.path.exists(f"{p}/{stem}_Proxy.mov")), "")
     src = px if os.path.exists(px) else f"{root}/{r['file']}"
     for i in range(12):

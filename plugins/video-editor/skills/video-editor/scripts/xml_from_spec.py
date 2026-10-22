@@ -19,10 +19,13 @@ Spec:
      "music": [ {"file": "/abs/song_edit.wav", "in": 0, "start": 0, "end": 63.4, "gain_db": 0} ],
         # stereo music pair on A1/A2 (A3/A4 when there is dialogue/VO). Premiere 26.5 renders this pair as MONO:
         # check the first review render and re-import the WAV as a normal stereo clip (reference/premiere.md)
+     "audio_tracks": [ {"file": "/abs/stem.wav", "in": 0, "start": 0, "end": 600} ],
+        # one audio track per entry (stacked stems: dialogue, room, music...); Premiere imports these mono too:
+        # overwrite_clip a fresh stereo import onto each track (reference/premiere.md)
      "markers": [ {"t": 0, "name": "MUSIC START", "comment": "..."} ],
      "width": 3840, "height": 2160 } } }   # optional per-sequence frame size override
   b-roll items also take "xoff" (9:16 crop-centre shift in source px, 3840-wide reference, same as vcrop_strip.py),
-  "center": [h, v] (raw FCP Basic Motion center), and "track": 1-4 (stacked/split-screen layers; graphics then go on V3 unless they set their own "track"; empty tracks below the top used one are kept, e.g. an empty V2 for an adjustment layer).
+  "center": [h, v] (raw FCP Basic Motion center), and "enabled": false (clip placed but disabled: stacked multicam, angles above the chosen one switched off), "track": 1-4 (stacked/split-screen layers; graphics then go on V3 unless they set their own "track"; empty tracks below the top used one are kept, e.g. an empty V2 for an adjustment layer).
   Clip paths may be absolute (e.g. slow-motion renders in _edit/).
   Dialogue items also take "xoff"/"center" (same as b-roll). Spec "fps" may be any NTSC rate (23.976/29.97/59.94).
   b-roll/dialogue items also take "scale" (default "broll_scale" at spec level; "auto" = fill the frame: horizontal
@@ -129,14 +132,14 @@ def levels(lin):
             f'<parameterid>level</parameterid><name>Level</name><valuemin>0</valuemin><valuemax>3.98109</valuemax><value>{lin}</value></parameter></effect></filter>')
 
 n = [0]
-def item(clip, st, en, src_in_s, track=None, extra=""):
+def item(clip, st, en, src_in_s, track=None, extra="", enabled=True):
     """st/en in sequence frames; source in given in seconds. Premiere 26.5 reads clipitem in/out in the
     sequence timebase whatever <rate> says (tested 2026-10-05: 29.97/59.94 media landed 1.25x/2.5x late),
     so source frames are counted at the sequence rate for every clip."""
     n[0] += 1
     si = fr(src_in_s); so = si + en - st
     src = f"<sourcetrack><mediatype>audio</mediatype><trackindex>{track}</trackindex></sourcetrack>" if track else ""
-    return (f'<clipitem id="ci-{n[0]}"><name>{escape(clip.split("/")[-1])}</name><enabled>TRUE</enabled><duration>{fr(duration(clip))}</duration>{RATE}'
+    return (f'<clipitem id="ci-{n[0]}"><name>{escape(clip.split("/")[-1])}</name><enabled>{"TRUE" if enabled else "FALSE"}</enabled><duration>{fr(duration(clip))}</duration>{RATE}'
             f'<start>{st}</start><end>{en}</end><in>{si}</in><out>{so}</out>{file_xml(clip)}{src}{extra}</clipitem>')
 
 def still(path, st, en, scale):
@@ -185,13 +188,18 @@ for name, s in spec["sequences"].items():
             # Position X = 0.5 + h/3 (measured 2026-10-13: 3840 media at 177.78% in 2160x3840; h -0.1157 -> X 0.4614). Verify by frame.
             mw = info(b["clip"])[4]; X = 0.5 - b["xoff"] * (mw / 3840) * (S / 100) / W; cen = (round((X - 0.5) * 3, 4), 0)
         tr = b.get("track") or (2 if s.get("dialogue") else 1)   # "track": put stacked layers on V1-V3
-        vt[tr].append(item(b["clip"], st, en, b["in"], extra=motion(S, cen)))
-        rep.append(f"{b['start']:6.2f}-{b['end']:6.2f}  V{tr}  {b['clip'].split('/')[-1]} @ {b['in']}  scale {S}%" + (f" center {cen}" if cen else "") + f"  ({info(b['clip'])[0]:.3f} fps src)")
+        vt[tr].append(item(b["clip"], st, en, b["in"], extra=motion(S, cen), enabled=b.get("enabled", True)))
+        rep.append(f"{b['start']:6.2f}-{b['end']:6.2f}  V{tr}  {b['clip'].split('/')[-1]} @ {b['in']}  scale {S}%" + ("" if b.get("enabled", True) else "  (disabled)") + (f" center {cen}" if cen else "") + f"  ({info(b['clip'])[0]:.3f} fps src)")
     for m in s.get("music", []):   # {"file": abs path, "in": src s, "start": t, "end": t, "gain_db": 0} -> stereo pair on A3/A4 (A1/A2 if no dialogue/VO)
         st, en = fr(m["start"]), fr(m["end"]); lin = round(10 ** (m.get("gain_db", 0) / 20), 4)
         ta, tb = (a3, a4) if (s.get("dialogue") or s.get("vo")) else (a1, a2)
         ta.append(item(m["file"], st, en, m.get("in", 0), 1, levels(lin))); tb.append(item(m["file"], st, en, m.get("in", 0), 2, levels(lin)))
         rep.append(f"{m['start']:6.2f}-{m['end']:6.2f}  MUSIC {m['file'].split('/')[-1]} @ {m.get('in', 0)}  {m.get('gain_db', 0):+.1f} dB")
+    xa = []   # "audio_tracks": [{"file", "in", "start", "end", "gain_db"}] -> one track each (A5+, or after the used A1-A4), e.g. stacked stems.
+    for m in s.get("audio_tracks", []):   # Premiere reads these as mono: re-place each with a fresh import (overwrite_clip) for stereo.
+        st, en = fr(m["start"]), fr(m["end"]); lin = round(10 ** (m.get("gain_db", 0) / 20), 4)
+        xa.append([item(m["file"], st, en, m.get("in", 0), 1, levels(lin))])
+        rep.append(f"{m['start']:6.2f}-{m['end']:6.2f}  A-STEM {m['file'].split('/')[-1]}")
     for g in s.get("graphics", []):
         st, en = fr(g["start"]), fr(g["end"])
         gt = g.get("track") or (3 if (s.get("dialogue") or any(b.get("track") for b in s.get("broll", []))) else 2)   # "track": 1-4 for the still
@@ -203,7 +211,7 @@ for name, s in spec["sequences"].items():
                f'<timecode>{RATE}<string>00:00:00:00</string><frame>0</frame><displayformat>NDF</displayformat></timecode>'
                f'<media><video><format><samplecharacteristics>{RATE}<width>{W}</width><height>{H}</height>'
                f'<anamorphic>FALSE</anamorphic><pixelaspectratio>square</pixelaspectratio><fielddominance>none</fielddominance></samplecharacteristics></format>'
-               f'{vtracks([v1, v2, v3, v4])}</video><audio><numOutputChannels>2</numOutputChannels>{track(a1)}{track(a2)}{track(a3)}{track(a4)}</audio></media>{mk}</sequence>')
+               f'{vtracks([v1, v2, v3, v4])}</video><audio><numOutputChannels>2</numOutputChannels>{track(a1)}{track(a2)}{track(a3)}{track(a4)}{"".join(track(x) for x in xa)}</audio></media>{mk}</sequence>')
     from collections import Counter
     dup = [c for c, n in Counter(b["clip"] for b in s.get("broll", [])).items() if n > 1]
     print(f"== {name}  {total / FPS:.2f}s" + (f"  WARNING repeated b-roll: {dup}" if dup else "")); print("\n".join("   " + r for r in rep))

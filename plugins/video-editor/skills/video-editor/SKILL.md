@@ -142,13 +142,21 @@ Then:
 | `audio_sync.py` | Audio-sync cameras and recorders to a reference (speech-band envelope cross-correlation, refined on raw audio); prints each file's start on the reference clock |
 | `cam_scan.py` / `cam_flags.py` | 6 fps camera motion + sharpness per clip or proxy, then flagged seconds (whips, focus pulls, blockages) on a shared clock, for multicam angle plans |
 | `proxy_scan.py` | Per-frame action, jitter, pan and sharpness (12 fps) + an 8-frame labelled strip per clip from proxies in any folder; feeds tagging agents |
+| `scan_summary.py` | One line per clip of per-second action/jitter/sharpness from a `proxy_scan.py` output folder, for tagging agents |
 | `bg_shake_slide.py` | Sliding-window `bg_shake`: the steadiest windows of a given length that still have action (same bar) |
 | `reel_repeats.py` | Cross-reel repeat check: frame-matches every planned shot's whole source clip (9:16 crop candidates) against delivered exports and reports where it already aired and whether it's the same window. Expect about one false positive per two real hits at 0.85-0.9; confirm with side-by-side frames before swapping |
 | `speech_regions.py` | Per-shot speech onsets and offsets from the final mix, for caption timing |
 | `caption_layer.py` | Cues JSON → bold burned-in caption PNGs → one frame-exact ProRes 4444 alpha layer (lead, wrap, 2-line check) |
+| `mumble_scan.py` | Finds Enhance Speech artefacts (enhanced stem loud where the raw lav is quiet: whispers, unscripted chatter) so those stretches can use the raw lav |
+| `splice_find.py` | Best join for a trim inside live music (chroma + mel match of the 3 s before each side), for a harmony-matched crossfade |
+| `chord_pad.py` | Chord-following ambient pad from a chords JSON (each chord swells and crossfades into the next, soft detuned voices, long dark reverb); use instead of `pad_synth.py` when a static drone sounds like an organ |
+| `pad_synth.py` | Static ambient pad in a key (open root + fifth, detuned voices, slow filter, `--cents` tuning to match live music) |
+| `piano_synth.py` | Soft felt-piano part from a notes JSON, fully synthetic (no samples needed) |
+| `piano_sampler.py` | Felt-piano part from a notes JSON using Logic Pro's factory Steinway sampler; sounds far more like a real piano. **macOS with Logic Pro installed only** (else use `piano_synth.py`) |
+| `harp_synth.py` | Plucked-harp part from a notes JSON (Karplus-Strong, body resonances, `--env` gain automation); blends with a live harp |
 | `music_profile.py` | Length, BPM, onset density, build and brightness of music files, to describe a client's music taste |
-| `xml_from_spec.py` | JSON edit spec → FCP7 XML sequences for Premiere and Resolve (frame-exact incl. mixed rates and any NTSC rate, auto gain, punch-ins, 9:16 reframe with `xoff` crop offsets, stacked layers via `track`, a music track, absolute-path renders, markers) |
-| `fcpxml_from_spec.py` | The same spec → FCPXML 1.10 for Final Cut (validated against Apple's DTD; doesn't read the newer `music`, `track` and `xoff` fields yet) |
+| `xml_from_spec.py` | JSON edit spec → FCP7 XML sequences for Premiere and Resolve (frame-exact incl. mixed rates and any NTSC rate, auto gain, punch-ins, 9:16 reframe with `xoff` crop offsets, stacked layers via `track`, disabled clips via `"enabled": false` (stacked multicam), a music track, one track per stem via `audio_tracks`, absolute-path renders, markers) |
+| `fcpxml_from_spec.py` | The same spec → FCPXML 1.10 for Final Cut (validated against Apple's DTD; doesn't read the newer `music`, `track`, `xoff`, `enabled` and `audio_tracks` fields yet) |
 | `preview_from_spec.py` | Low-res review MP4 of a spec sequence via ffmpeg, no editing app needed; frame-exact (segments by frame count, gaps as black), accepts absolute paths; mux the music or mix yourself |
 | `render_slowmo.py` | Frame-exact slow-motion ProRes from a high-fps window (59.94 → 40% at 23.976), keeps orientation (upright vertical drone) |
 | `speed_ramp.py` | Baked speed ramp (fast → eased → slow, motion blur) from high-fps source → ProRes, for apps whose speed tools can't be scripted |
@@ -158,6 +166,7 @@ Then:
 | `vcrop_strip.py` | Frame strip of a window as a 9:16 crop, to check vertical reframes before picking |
 | `style_profile.py` | Shot-length / hook / tail benchmarks from finished reels, for a client `STYLE.md` |
 | `tone_stats.py` | Black/mid/white points, contrast, saturation of finished films, to compare a cut against past exports |
+| `lut_apply.py` | Applies a .cube LUT to a frame offline at a given intensity (e.g. 115%), to measure colour in the graded domain without a render |
 | `cc_match.py` | Propose Lumetri Basic Correction values that match ungraded shots to the ones the editor corrected |
 | `dialogue_profile.py` | Per-region level, noise floor and tone of a voice stem; flags dialogue that won't sit together |
 | `jello_check.py` | Warp Stabilizer jello detector (before/after renders) |

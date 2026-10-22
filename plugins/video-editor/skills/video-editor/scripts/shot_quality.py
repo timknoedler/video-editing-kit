@@ -30,6 +30,7 @@ def scan(c):
     if os.path.exists(out): return
     r = probe[c]; w, h = (360, 640) if r["orientation"] == "vertical" else (640, 360); fps = fps_of(r)
     d, b = os.path.split(r["file"]); px = f"{root}/{d}/Proxies/{os.path.splitext(b)[0]}_Proxy.mov"
+    if not os.path.exists(px): px = f"{E}/proxies/{d}/{os.path.splitext(b)[0]}_Proxy.mov"  # make_proxies.py output
     src = px if os.path.exists(px) else f"{root}/{r['file']}"  # proxies decode much faster; metrics run at 640x360 anyway
     p = subprocess.Popen(["ffmpeg", "-v", "error", "-i", src, "-vf", f"scale={w}:{h}", "-pix_fmt", "gray",
                           "-f", "rawvideo", "-"], stdout=subprocess.PIPE)

@@ -1,0 +1,11 @@
+# Recipe: Raw selects delivery (one long graded file the client cuts themselves)
+
+Read this before Phase 2 when the client wants "everything usable" rather than an edit (a band filmed across a wedding cutting its own socials, a venue wanting a footage library). SKILL.md still applies; this file overrides it where they conflict.
+
+- **Goal:** every usable second, in shoot order, on one 4K timeline, colour-corrected, as one file. No story, no music, no pacing decisions.
+- **Proxies:** skip them. Scan the originals once with `scan_thumbs.py` (camera motion + sharpness + 1 fps thumbs in one decode); expect ~2x realtime on 10-bit 4K that won't hardware-decode.
+- **Trim only junk, and loosely.** The first strict version (cut at motion > 35, soft frames, 2.5 s minimum) gave ~300 pieces, lost real moments and read "too cut up". `junk_keeps.py` cuts only motion-blur whips (motion > 40 px/frame at 320 w with sharpness under 0.5x the local ±5 s median, or motion > 80) lasting ≥ 1 s mid-take, black, and the swing at a take's head and tail. **Keep:** reframes, zooming in or out to reposition, moving from an instrument up to a face, people walking through frame while focus holds, shaky stretches around a cut. Nothing under 3 s: short scraps merge back into their neighbour. The loose version kept ~98% and halved the piece count.
+- **Audio:** camera audio at 0 dB (`"gain_db": 0` in the spec, no per-clip levelling) and `"stereo_pairs": true` so the camera's stereo survives the XML. Hard cuts are fine; the client re-cuts.
+- **Navigation:** a sequence marker at each clock gap over ~15 min, labelled by what the frames show (ceremony / cocktail hour / reception sets) plus the clock time.
+- **Mixed resolutions:** 1080p clips at 200% (`scale: auto`); tell the client they have less punch-in room on those.
+- **Delivery:** H.264 .mp4 at the timeline size, AAC 320, so it plays on any Windows PC or Mac with nothing to install (HEVC needs a paid extension on Windows). This overrides SKILL.md section 5's ~100 Mbps default: size it to the client's limit: bitrate (Mbps) ≈ target GB × 8000 / seconds − 0.32; about 35 Mbps gives ~19 GB for a 70 min file and keeps crowd and shadow detail for punch-ins. Premiere's HEVC exporter writes nothing through the bridge (26.5); H.264 works.

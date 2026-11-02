@@ -15,6 +15,7 @@ Read this before Phase 2 on reels, recaps, promos and other short-form social cu
 - Strong hook in the first 2-3 s; end on the most specific, visual line or shot.
 - Even warm or emotional recaps open with energy: a kinetic first 6-8 s (running, splash), then slow down for the heart.
 - Montages need a story arc: write 4-6 acts in `paper_edits.md` before picking shots, one act marker per section.
+- **Post pushes on static shots:** same house default as `recipes/event-recap.md` (~9%, alternating in/out, skip shots the camera already pushes in on).
 - **~1.6-2.4 s per shot** (hero/button shots up to ~4 s), b-roll heavy. Fast and beat-driven cutting is fine here, including some off-beat energy cuts.
 - If there isn't enough clean b-roll, shorten the video (60 s -> 45 s) rather than pad it.
 - Balance who's on screen (count who appears across the build - ages, groups - and avoid long runs of the same kind of shot).
@@ -22,3 +23,4 @@ Read this before Phase 2 on reels, recaps, promos and other short-form social cu
 ## Captions and end
 - Don't caption unasked. When the editor asks: words from whisper, timing from `speech_regions.py` on the final mix (raw whisper SRTs drift up to ~1 s), cues led by 3 frames, then a burned-in layer from `caption_layer.py`. House style: `--px 135 --maxw 0.70 --stroke 0 --shadow 0 --cy 0.50` (Arial Black, white, no outline, no punctuation except apostrophes and hyphens, centred vertically, at most 2 lines with manual `|` breaks). Lines must stay inside the middle 70% of the width or the Reels like/share rail covers them (Premiere: `check_caption_safe_zone` instagram_reels on the union of the PNGs' boxes). Make a 1080p ProRes 4444 proxy of the layer for playback, and put it on the top track above any adjustment layer.
 - Drone closers under a logo must be steady (<= ~0.3 px).
+- **Client logo at the end:** a logo over the last clip often beats a white end card. Key a flat logo-on-white to alpha (alpha from darkness), recolour white if the brand colour vanishes on the footage, add a soft shadow, keep it inside the safe zone, cut it on (no fade), centred with no captions under it, while the real clip plays on 1-2 s (never a freeze frame; `freeze_frame` bakes in the grade, and a still re-rendered at the wrong colour range jumps in contrast under the LUT).

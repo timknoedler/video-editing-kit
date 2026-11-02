@@ -1,0 +1,12 @@
+{
+  "version": 2,
+  "stabilization": {
+    "max_zoom": 110.0,
+    "smoothing_params": [
+      { "name": "smoothness", "value": 0.15 },
+      { "name": "smoothness_pitch", "value": 0.15 },
+      { "name": "smoothness_yaw", "value": 0.15 },
+      { "name": "smoothness_roll", "value": 0.15 }
+    ]
+  }
+}

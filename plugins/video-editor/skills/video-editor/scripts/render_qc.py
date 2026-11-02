@@ -42,11 +42,11 @@ def shot_stats(f):
     neutral = (C < np.percentile(C, 40)) & (L > 50) & (L < 220)
     mid = (L > 40) & (L < 230)
     green = (hsv[..., 0] >= 30) & (hsv[..., 0] <= 90) & (hsv[..., 2] > 40) & (C > 6)
-    blue = ((f[..., 0] > 200) & (f[..., 1] < 70) & (f[..., 2] < 30)).mean(1)
+    blue = ((f[..., 0] > 180) & (f[..., 1] < 120) & (f[..., 2] < 90) & (f[..., 0].astype(int) - f[..., 2] > 120)).mean(1)  # H.264 renders read the banner as BGR ~236,77,37
     return dict(p2=float(np.percentile(g, 2)), p50=float(np.percentile(g, 50)), p98=float(np.percentile(g, 98)),
                 a=float(A[neutral].mean()) if neutral.any() else 0, b=float(B[neutral].mean()) if neutral.any() else 0,
                 chroma=float(C[mid].mean()), c90=float(np.percentile(C[mid], 90)),
-                green=float(C[green].mean()) if green.mean() > 0.03 else None, ws_banner_rows=int((blue > 0.6).sum()))
+                green=float(C[green].mean()) if green.mean() > 0.03 else None, ws_banner_rows=int((blue > 0.5).sum()))
 
 
 def held_frames(vid, w=192, h=96):
